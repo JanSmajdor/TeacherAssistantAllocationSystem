@@ -10,6 +10,13 @@ class TeachingAssistant extends Model
     use HasFactory, Notifiable;
 
     /**
+     * The database table used by the model.
+     *
+     * @var string
+     */
+    protected $table = 'teaching_assistants';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
