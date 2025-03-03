@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\TeachingAssistant;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -28,7 +29,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
 
     /**
      * Create a new controller instance.
@@ -64,14 +65,29 @@ class RegisterController extends Controller
      * @return \App\Models\User
      */
     protected function create(array $data)
-    {
-        // dd($data);
-        return User::create([
+    {   
+        $user = User::create([
             'first_name' => $data['firstname'],
             'last_name' => $data['lastname'],
             'email' => $data['email'],
             'role' => $data['role'],
             'password' => Hash::make($data['password']),
         ]);
+
+         // 🔹 Ensure the user is actually created
+        if (!$user) {
+            throw new \Exception('User creation failed');
+        }
+
+        // check whether user is a TA, if they are, create a row in teaching_assistant & ta_areas_of_knowledge
+        if ($data['role'] == 'Teaching Assistant') {
+            TeachingAssistant::create([
+                'user_id' => $user->id
+            ]); 
+
+            //create a row in ta_areas_of_knowldge
+        }
+
+        return $user;
     }
 }
