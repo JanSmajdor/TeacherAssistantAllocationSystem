@@ -8,6 +8,7 @@ use App\Models\TeachingAssistant;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -38,7 +39,12 @@ class RegisterController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('guest');
+        $this->middleware(function ($request, $next) {
+            if (Auth::check() && Auth::user()->role == 'Admin') {
+                return $next($request); // Allow admins to access register page
+            }
+            return redirect('/'); // Redirect non-admin users
+        });
     }
 
     /**
