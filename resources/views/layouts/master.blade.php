@@ -56,8 +56,11 @@
                                                      document.getElementById('logout-form').submit();">
                                         Logout
                                     </a>
+
+                                    @if (Auth::user()->role == 'Teaching Assistant')
                                     <a class="dropdown-item" href="{{ route('edit_account') }}">Edit Your Account Details</a>
-                                    
+                                    @endif
+
                                     @if (Auth::user()->role == 'Admin')
                                     <a class="dropdown-item" href="{{ route('register') }}">Register New User</a>
                                     @endif
