@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class TeachingAssistant extends Model
+class AreaOfKnowledge extends Model
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
@@ -17,7 +17,7 @@ class TeachingAssistant extends Model
      *
      * @var string
      */
-    protected $table = 'teaching_assistants';
+    protected $table = 'areas_of_knowledge';
 
     /**
      * The attributes that are mass assignable.
@@ -25,18 +25,11 @@ class TeachingAssistant extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'user_id',
-        'contracted_hours',
-        'available_hours',
+        'name',
     ];
 
-    public function areasOfKnowledge()
+    public function teachingAssistants()
     {
-        $this->belongsToMany(AreaOfKnowledge::class, 'ta_area_of_knowledge', 'ta_id', 'area_id');
-    }
-
-    public function isProfileComplete()
-    {
-        return !empty($this->contracted_hours) && !empty($this->available_hours) && $this->areasOfKnowledge()->exists();
+        return $this->belongsToMany(TeachingAssistant::class, 'ta_areas_of_knowledge', 'ta_id', 'area_id');
     }
 }

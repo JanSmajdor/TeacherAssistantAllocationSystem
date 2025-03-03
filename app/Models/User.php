@@ -47,4 +47,9 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function teachingAssistant()
+    {
+        return $this->hasOne(TeachingAssistant::class, 'user_id');
+    }
 }
