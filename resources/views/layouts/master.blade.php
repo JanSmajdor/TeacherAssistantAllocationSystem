@@ -63,6 +63,8 @@
 
                                     @if (Auth::user()->role == 'Admin')
                                     <a class="dropdown-item" href="{{ route('register') }}">Register New User</a>
+                                    <a class="dropdown-item" href="{{ route('admin.areas_of_knowledge.show') }}">Create New Area Of Knowledge</a>
+                                    <a class="dropdown-item" href="{{ route('admin.create_new_module.show') }}">Create New Module</a>
                                     @endif
 
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -77,8 +79,25 @@
         </nav>
 
         <main class="py-4">
+            @if(session('success'))
+            <div class="alert alert-success">
+                {{session('success')}}
+            </div>
+            @elseif(session('error'))
+            <div class="alert alert-danger">
+                {{session('error')}}
+            </div>
+            @endif
             @yield('content')
         </main>
     </div>
 </body>
 </html>
+<script>
+    setTimeout(function() {
+        document.querySelector('.alert-success')?.remove();
+    }, 5000);
+    setTimeout(function() {
+        document.querySelector('.alert-danger')?.remove();
+    }, 10000);
+</script>
