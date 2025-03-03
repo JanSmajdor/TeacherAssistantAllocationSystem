@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+.card {
+    position: relative;
+    top: 1.5rem;
+}
+
+body .py-4 {
+    padding-top: 0 !important;
+}
+
 #logout-button {
     color: #ff3349;
 }
