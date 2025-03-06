@@ -88,6 +88,12 @@
                 {{session('error')}}
             </div>
             @endif
+            
+            @if(Auth::user()->teachingAssistant && !Auth::user()->teachingAssistant->isProfileComplete() && request()->route()->getName() == 'home')
+            <div class="alert alert-warning">
+                Your profile is incomplete! Please <a href="{{ route('edit_account') }}">click here</a> to update your information.
+            </div>
+             @endif
             @yield('content')
         </main>
     </div>
