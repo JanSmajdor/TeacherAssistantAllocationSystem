@@ -14,3 +14,16 @@ body .py-4 {
 #logout-button {
     color: #ff3349;
 }
+
+.choice-entry {
+    padding: 0.5em;
+    /* border-style: solid; */
+    /* border-width: 1px; */
+}
+
+.btn.remove-choice {
+    margin: 0.5em;
+    margin-left: 0;
+    font-size: smaller;
+    width: 5.8em;
+}
