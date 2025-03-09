@@ -69,7 +69,7 @@
                     <!-- Areas of Knowledge -->
                     <div class="card-body">
                         <h4>Areas of Knowledge</h4>
-                        <div id="areas-container choice-entry">
+                        <div id="areas-container">
                             @foreach($ta_areas_of_knowledge as $area)
                             <div class="mb-3 area-entry">
                                 <input type="text" name="areas_of_knowledge[]" value="{{ $area->name }}" class="form-control" readonly>
@@ -77,7 +77,7 @@
                             </div>
                             @endforeach
                         </div>
-                        <div class="input-group choice-entry mb-3">
+                        <div class="input-group mb-3">
                             <select id="new-area" class="form-select">
                                 @foreach($all_areas as $area)
                                 <option value="{{ $area->id }}">{{ $area->name }}</option>
@@ -98,10 +98,10 @@
     </div>
 </div>
 
-
+<!-- JavaScript for Dynamic Availability and Areas of Knowledge Fields -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Function for Flatpickr
+        // Function to initialize Flatpickr on date and time inputs
         function initializeFlatpickr(input) {
             flatpickr(input, {
                 enableTime: true,
@@ -158,22 +158,35 @@
 
         // Add event listener to add new areas of knowledge
         document.getElementById('add-area').addEventListener('click', function() {
-            let container = document.getElementById('areas-container choice-entry');
+            let container = document.getElementById('areas-container');
             let select = document.getElementById('new-area');
             let selectedOption = select.options[select.selectedIndex];
             let newEntry = document.createElement('div');
-            newEntry.classList.add('area-entry', 'choice-entry', 'mb-3');
+            newEntry.classList.add('area-entry', 'mb-3');
             newEntry.innerHTML = `
                 <input type="text" name="areas_of_knowledge[]" value="${selectedOption.text}" class="form-control" readonly>
-                <button type="button" class="btn btn-danger remove-choice">Remove</button>
+                <button type="button" class="btn btn-danger remove-area">Remove</button>
             `;
             container.appendChild(newEntry);
+
+            // Remove the selected option from the dropdown
+            select.remove(select.selectedIndex);
         });
 
         // Add event listener to remove areas of knowledge entries
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('remove-area')) {
-                event.target.parentElement.remove();
+                let areaEntry = event.target.parentElement;
+                let areaName = areaEntry.querySelector('input').value;
+                let select = document.getElementById('new-area');
+
+                // Add the removed option back to the dropdown
+                let option = document.createElement('option');
+                option.text = areaName;
+                select.add(option);
+
+                // Remove the area entry
+                areaEntry.remove();
             }
         });
     });
