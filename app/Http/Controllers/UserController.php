@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\AreaOfKnowledge;
 use App\Models\TAAreaOfKnowledge;
 use App\Models\Availability;
+use App\Models\TAEditAreasOfKnowledgeRequest;
+use App\Models\TeachingAssistant;
 
 class UserController extends Controller 
 {
@@ -34,18 +36,66 @@ class UserController extends Controller
             'users.last_name',
             'users.email',
             'users.password',
+            'teaching_assistants.id AS ta_id',
             'teaching_assistants.contracted_hours'
         )
         ->join('teaching_assistants', 'teaching_assistants.user_id', '=', 'users.id')
         ->where('users.id', $user->id)
         ->first();
 
-        $availability = Availability::where('ta_id', $user->id)->get();
+        $availability = Availability::where('ta_id', $ta_details->ta_id)->get();
 
         $all_areas = AreaOfKnowledge::all();
 
         $ta_areas_of_knowledge = TAAreaOfKnowledge::where('ta_id', $user->id)->pluck('area_id')->toArray();
 
         return view('edit_account', compact('ta_details', 'availability', 'all_areas', 'ta_areas_of_knowledge'));
+    }
+
+    public function edit(Request $request) {
+
+        $loggedIn_userid = Auth::user()->id;
+        $ta_id = TeachingAssistant::where('user_id', $loggedIn_userid)->first()->id;
+        $available_from = $request->input('start_times');
+        $available_to = $request->input('end_times');
+        $ta_areas_of_knowledge = $request->input('areas_of_knowledge');
+
+        if (empty($available_from) && empty($available_to)) {
+            Availability::where('ta_id', $ta_id)->delete();
+            return redirect()->back()->with('success', 'All Availability has been cleared.');
+        }
+
+        // Populate ta_availability table
+        foreach ($available_from as $key => $start_time) {
+            $end_time = $available_to[$key];
+            Availability::updateOrCreate(
+                [
+                    'ta_id' => $ta_id,
+                    'available_from' => $start_time,
+                    'available_to' => $end_time
+                ],
+                [
+                    'available_from' => $start_time,
+                    'available_to' => $end_time
+                ]
+            );
+        }
+
+        // Add Areas of knowledge to request table
+        foreach ($ta_areas_of_knowledge as $area_id) {
+            TAEditAreasOfKnowledgeRequest::updateOrCreate(
+                [
+                    'ta_id' => $ta_id,
+                    'area_id' => $area_id
+                ],
+                [
+                    'ta_id' => $ta_id,
+                    'area_id' => $area_id,
+                    'request_status' => 'Pending'
+                ]
+            );
+        }        
+
+        return redirect()->back()->with('success', 'Account details form submitted successfully.');
     }
 }

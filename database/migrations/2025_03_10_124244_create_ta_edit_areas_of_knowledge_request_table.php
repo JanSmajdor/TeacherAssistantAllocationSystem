@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('ta_id');
             $table->unsignedBigInteger('area_id');
-            $table->enum('request_status', ['Pending', 'Approved', 'Rejected']);
+            $table->enum('request_status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
             $table->timestamps();
 
             $table->foreign('ta_id')->references('id')->on('teaching_assistants')->onDelete('cascade');

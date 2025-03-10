@@ -8,9 +8,8 @@
         <div class="col-md-10">
             <div class="card">
                 <div class="card-header">Edit Account Details</div>
-                <form id="edit-account-form" action="{{ route('edit_account') }}" method='POST'>
+                <form id="edit-account-form" action="{{ route('request_edit_account') }}" method='POST'>
                     @csrf
-                    @method('PUT')
 
                     <!-- Personal Information -->
                     <div class="card-body">
@@ -42,10 +41,10 @@
                             @forelse ($availability as $avail)
                             <div class="mb-3">
                                 <label for="available_from" class="form-label">From:</label>
-                                <input type="datetime-local" name="start_times[]" value="{{ $avail->start_time }}" class="form-control">
+                                <input type="datetime-local" name="start_times[]" value="{{ $avail->available_from }}" class="form-control">
                                 
                                 <label for="available_to" class="form-label">To:</label>
-                                <input type="datetime-local" name="end_times[]" value="{{ $avail->end_time }}" class="form-control">
+                                <input type="datetime-local" name="end_times[]" value="{{ $avail->available_to }}" class="form-control">
                                 
                                 <button type="button" class="btn btn-danger remove-choice">Remove</button>
                             </div>
@@ -72,7 +71,8 @@
                         <div id="areas-container">
                             @foreach($ta_areas_of_knowledge as $area)
                             <div class="mb-3 area-entry">
-                                <input type="text" name="areas_of_knowledge[]" value="{{ $area->name }}" class="form-control" readonly>
+                                <input type="hidden" name="areas_of_knowledge[]" value="{{ $area }}">
+                                <input type="text" value="{{ $all_areas->find($area)->name }}" class="form-control" readonly>
                                 <button type="button" class="btn btn-danger remove-area">Remove</button>
                             </div>
                             @endforeach
@@ -164,7 +164,8 @@
             let newEntry = document.createElement('div');
             newEntry.classList.add('area-entry', 'mb-3');
             newEntry.innerHTML = `
-                <input type="text" name="areas_of_knowledge[]" value="${selectedOption.text}" class="form-control" readonly>
+                <input type="hidden" name="areas_of_knowledge[]" value="${selectedOption.value}">
+                <input type="text" value="${selectedOption.text}" class="form-control" readonly>
                 <button type="button" class="btn btn-danger remove-area">Remove</button>
             `;
             container.appendChild(newEntry);
@@ -177,11 +178,13 @@
         document.addEventListener('click', function(event) {
             if (event.target.classList.contains('remove-area')) {
                 let areaEntry = event.target.parentElement;
-                let areaName = areaEntry.querySelector('input').value;
+                let areaName = areaEntry.querySelector('input[type="text"]').value;
+                let areaId = areaEntry.querySelector('input[type="hidden"]').value;
                 let select = document.getElementById('new-area');
 
                 // Add the removed option back to the dropdown
                 let option = document.createElement('option');
+                option.value = areaId;
                 option.text = areaName;
                 select.add(option);
 
