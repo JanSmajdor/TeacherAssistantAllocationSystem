@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\TAAreaOfKnowledge;
 use App\Models\TAEditAreasOfKnowledgeRequest;
+use App\Models\TeachingAssistant;
 
 class HomeController extends Controller
 {
@@ -28,16 +29,22 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
+        $ta_details = TeachingAssistant::where('user_id', $user->id)->first();
 
+        $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $ta_details->id)
+        ->with('teaching_assistant.user')
+        ->get();
+        
         // get any ta edit account details requests as well as their user details
-        $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('request_status', 'Pending')
+        $admin_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('request_status', 'Pending')
             ->with('teaching_assistant.user')
             ->get();
 
-        $count = $ta_edit_account_requests->count();
+        $ta_count = $ta_edit_account_requests->count();
+        $admin_count = $admin_edit_account_requests->count();
         // dd($ta_edit_account_requests);
 
-        return view('home', compact('user', 'ta_edit_account_requests', 'count'));
+        return view('home', compact('user', 'ta_edit_account_requests', 'admin_edit_account_requests', 'ta_count', 'admin_count'));
     }
 
     public function approve(Request $request)

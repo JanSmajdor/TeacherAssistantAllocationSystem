@@ -20,7 +20,7 @@
                     @if ($user->role == 'Admin')
                     
                     <div class="edit-account-details-table">
-                        <h3>Pending Requests ({{ $count }}) </h3>
+                        <h3>Pending Requests ({{ $admin_count }}) </h3>
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
@@ -30,7 +30,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($ta_edit_account_requests as $request)
+                                @foreach($admin_edit_account_requests as $request)
                                 <tr>
                                     <td>{{ $request->teaching_assistant->user->first_name }} {{ $request->teaching_assistant->user->last_name }}</td>
                                     @if($request->teaching_assistant->user->role == 'Teaching Assistant')
@@ -91,7 +91,30 @@
 
                     <!-- Teaching Assistant Dashboard Content -->
                     @if ($user->role == 'Teaching Assistant')
-
+                    
+                    <div class="edit-account-details-table">
+                        <h3>{{$user->first_name}}'s Requests ({{ $ta_count }}) </h3>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Created</th>
+                                    <th>Request Type</th>
+                                    <th>Request Status</th>
+                                    <th>Viewed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($ta_edit_account_requests as $request)
+                                <tr>
+                                    <td>{{ $request->created_at }}</td>
+                                    <td>Edit Account Details</td>
+                                    <td>{{ $request->request_status }}</td>
+                                    <td>{{ $request->updated_at }}</td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                     
                     @endif
                 </div>
