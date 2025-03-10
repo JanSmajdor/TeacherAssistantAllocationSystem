@@ -13,6 +13,8 @@ class TAAreaOfKnowledge extends Model
         'area_id'
     ];
 
+    public $timestamps = false;
+
     public function teachingAssistant()
     {
         return $this->belongsTo(TeachingAssistant::class, 'ta_id');

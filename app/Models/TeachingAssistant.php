@@ -30,6 +30,11 @@ class TeachingAssistant extends Model
         'available_hours',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function areasOfKnowledge()
     {
         $this->belongsToMany(AreaOfKnowledge::class, 'ta_area_of_knowledge', 'ta_id', 'area_id');
