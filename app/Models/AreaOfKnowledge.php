@@ -10,7 +10,7 @@ class AreaOfKnowledge extends Model
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
-    public $timestamps = false;
+    public $timestamps = true;
 
     /**
      * The database table used by the model.

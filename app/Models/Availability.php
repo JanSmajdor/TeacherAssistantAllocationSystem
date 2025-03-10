@@ -6,17 +6,19 @@ use Illuminate\Database\Eloquent\Model;
 
 class Availability extends Model
 {
+
     protected $table = 'ta_availability';
 
     protected $fillable = [
         'ta_id',
-        'day',
-        'start_time',
-        'end_time'
+        'available_from',
+        'available_to'
     ];
+
+    public $timestamps = true;
 
     public function teachingAssistant()
     {
-        return $this->belongsTo(TeachingAssistant::class, 'ta_id');
+        return $this->belongsTo(TeachingAssistant::class, 'user_id');
     }
 }
