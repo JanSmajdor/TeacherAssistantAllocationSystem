@@ -21,19 +21,19 @@ class AdminController extends Controller
         //still need to add proper request data verification
 
         //check if this AoK exists already
-        try{
+        try {
             $new_area_of_knowledge = AreaOfKnowledge::firstOrCreate([
                 'name' => $request->input('aok-name')
             ]);
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error Adding Area of Knowledge to the Database:' . $e->getMessage());
-        }
-        
-        if ($new_area_of_knowledge) {
-            return redirect()->back()->with('error', 'Error Adding Area of Knowledge to the Database: Already Exists');
-        }
 
-        return redirect()->back()->with('success', 'Area of Knowledge has been Succesfully Added to the Database!');
+            if (!$new_area_of_knowledge->wasRecentlyCreated) {
+                return redirect()->back()->with('error', 'Error Adding Area of Knowledge to the Database: Already Exists');
+            }
+
+            return redirect()->back()->with('success', 'Area of Knowledge has been Successfully Added to the Database!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error Adding Area of Knowledge to the Database: ' . $e->getMessage());
+        }
     }
 
     public function showModuleForm()
