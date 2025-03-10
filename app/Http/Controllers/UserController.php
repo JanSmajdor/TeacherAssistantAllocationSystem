@@ -59,11 +59,23 @@ class UserController extends Controller
         $available_from = $request->input('start_times');
         $available_to = $request->input('end_times');
         $ta_areas_of_knowledge = $request->input('areas_of_knowledge');
+        $ta_contracted_hours = $request->input('contracted_hours');
 
         if (empty($available_from) && empty($available_to)) {
             Availability::where('ta_id', $ta_id)->delete();
             return redirect()->back()->with('success', 'All Availability has been cleared.');
         }
+
+        if (count($available_from) != count($available_to)) {
+            return redirect()->back()->with('error', 'Please ensure that all start times have an end time.');
+        }
+        
+        if (empty($ta_contracted_hours)) {
+            return redirect()->back()->with('error', 'Please enter a value for Contracted Hours.');
+        }
+        
+        // Update teaching_assistants table with contracted hours
+        TeachingAssistant::where('id', $ta_id)->update(['contracted_hours' => $ta_contracted_hours]);
 
         // Populate ta_availability table
         foreach ($available_from as $key => $start_time) {
@@ -82,20 +94,21 @@ class UserController extends Controller
         }
 
         // Add Areas of knowledge to request table
-        foreach ($ta_areas_of_knowledge as $area_id) {
-            TAEditAreasOfKnowledgeRequest::updateOrCreate(
-                [
-                    'ta_id' => $ta_id,
-                    'area_id' => $area_id
-                ],
-                [
-                    'ta_id' => $ta_id,
-                    'area_id' => $area_id,
-                    'request_status' => 'Pending'
-                ]
-            );
-        }        
-
+        if(!empty($ta_areas_of_knowledge)) {
+            foreach ($ta_areas_of_knowledge as $area_id) {
+                TAEditAreasOfKnowledgeRequest::updateOrCreate(
+                    [
+                        'ta_id' => $ta_id,
+                        'area_id' => $area_id
+                    ],
+                    [
+                        'ta_id' => $ta_id,
+                        'area_id' => $area_id,
+                        'request_status' => 'Pending'
+                    ]
+                );
+            }        
+        }
         return redirect()->back()->with('success', 'Account details form submitted successfully.');
     }
 }

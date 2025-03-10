@@ -29,6 +29,12 @@
                             <input id="email" type="email" class="form-control" name="email" value="{{ $ta_details->email }}" disabled>
                         </div>
 
+                        <div class="mb-3">
+                            <label for="contracted_hours" class="form-label">Contracted Hours</label>
+                            <input id="contracted_hours" type="contracted_hours" class="form-control" name="contracted_hours" value="{{ $ta_details->contracted_hours }}">
+
+                        </div>
+
                         <a href="{{ route('password.request') }}" class="btn btn-warning">Reset Password</a>
                     </div>
 

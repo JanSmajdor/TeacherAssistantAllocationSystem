@@ -27,7 +27,6 @@ class TeachingAssistant extends Model
     protected $fillable = [
         'user_id',
         'contracted_hours',
-        'available_hours',
     ];
 
     public function user()
@@ -37,11 +36,16 @@ class TeachingAssistant extends Model
 
     public function areasOfKnowledge()
     {
-        $this->belongsToMany(AreaOfKnowledge::class, 'ta_area_of_knowledge', 'ta_id', 'area_id');
+        return $this->belongsToMany(AreaOfKnowledge::class, 'ta_areas_of_knowledge', 'ta_id', 'area_id');
+    }
+
+    public function availability()
+    {
+        return $this->hasMany(Availability::class, 'ta_id');
     }
 
     public function isProfileComplete()
     {
-        return !empty($this->contracted_hours) && !empty($this->available_hours) && $this->areasOfKnowledge()->exists();
+        return !empty($this->contracted_hours) && $this->availability()->exists() && $this->areasOfKnowledge()->exists();
     }
 }
