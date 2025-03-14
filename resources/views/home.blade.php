@@ -38,9 +38,7 @@
                                 @foreach($admin_edit_account_requests as $request)
                                 <tr>
                                     <td>{{ $request->teaching_assistant->user->first_name }} {{ $request->teaching_assistant->user->last_name }}</td>
-                                    @if($request->teaching_assistant->user->role == 'Teaching Assistant')
                                     <td>Edit Account Details</td>
-                                    @endif
                                     <td>
                                         <button class="btn btn-primary" data-toggle="modal" data-target="#requestModal-{{ $request->id }}">Manage Request</button>
                                     </td>
@@ -63,23 +61,18 @@
                                         <p><strong>Date Request Created:</strong> {{ \Carbon\Carbon::parse($request->created_at)->format('d/m/Y')}}</p>
                                         <hr>
                                         <h5>Requested Changes</h5>
-                                        @if(!empty($request->teaching_assistant->current_area_id))
-                                        <p><strong>Current Area of Knowledge:</strong> {{ $request->teaching_assistant->current_area_id }}</p>
-                                        @else
-                                        <p><strong>Current Area of Knowledge:</strong> N/A</p>
-                                        @endif
-                                        <p><strong>Requested Area of Knowledge:</strong> {{ $request->area_of_knowledge->name }}</p>
+                                        <p><strong>Requested Areas of Knowledge:</strong> {{ implode(', ', $request->areas_of_knowledge) }}</p>
                                         <!-- Add more details as needed -->
                                       </div>
                                       <div class="modal-footer">
                                         <form id="approve-form-{{ $request->id }}" action="{{ route('approve_edit_account') }}" method="POST" style="display: none;">
                                             @csrf
-                                            <input type="hidden" name="request_id" value="{{ $request->id }}">
+                                            <input type="hidden" name="ta_id" value="{{ $request->ta_id }}">
                                             <button type="button" class="btn btn-success" onclick="event.preventDefault(); document.getElementById('approve-form-{{ $request->id }}').submit();">Approve</button>
                                         </form>
                                         <form id="deny-form-{{ $request->id }}" action="{{ route('deny_edit_account') }}" method="POST" style="display: none;">
                                             @csrf
-                                            <input type="hidden" name="request_id" value="{{ $request->id }}">
+                                            <input type="hidden" name="ta_id" value="{{ $request->ta_id }}">
                                             <button type="button" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('deny-form-{{ $request->id }}').submit();">Deny</button>
                                         </form>
                                       </div>

@@ -29,40 +29,43 @@ class HomeController extends Controller
     public function index()
     {
         $user = Auth::user();
-        // $ta_details = TeachingAssistant::where('user_id', $user->id)->first();
 
-        // $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $ta_details->id)
-        // ->with('teaching_assistant.user')
-        // ->get();
-        
         // get any ta edit account details requests as well as their user details
         $admin_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('request_status', 'Pending')
-            ->with('teaching_assistant.user')
-            ->get();
+            ->with(['teaching_assistant.user', 'area_of_knowledge'])
+            ->get()
+            ->groupBy('ta_id')
+            ->map(function ($requests) {
+                $firstRequest = $requests->first();
+                $firstRequest->areas_of_knowledge = $requests->pluck('area_of_knowledge.name')->toArray();
+                return $firstRequest;
+            });
 
-        // $ta_count = $ta_edit_account_requests->count();
         $admin_count = $admin_edit_account_requests->count();
-        // dd($ta_edit_account_requests);
 
-        // return view('home', compact('user', 'ta_edit_account_requests', 'admin_edit_account_requests', 'ta_count', 'admin_count'));
         return view('home', compact('user', 'admin_edit_account_requests', 'admin_count'));
     }
 
     public function approve(Request $request)
     {
-        $ta_edit_account_request = TAEditAreasOfKnowledgeRequest::find($request->input('request_id'));
-        $ta_edit_account_request->request_status = 'Approved';
-        $ta_edit_account_request->save();
+        $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $request->input('ta_id'))
+            ->where('request_status', 'Pending')
+            ->get();
 
-        $exists = TAAreaOfKnowledge::where('ta_id', $ta_edit_account_request->ta_id)
-            ->where('area_id', $ta_edit_account_request->area_id)
-            ->exists();
+        foreach ($ta_edit_account_requests as $ta_edit_account_request) {
+            $ta_edit_account_request->request_status = 'Approved';
+            $ta_edit_account_request->save();
 
-        if (!$exists) {
-            TAAreaOfKnowledge::create([
-                'ta_id' => $ta_edit_account_request->ta_id,
-                'area_id' => $ta_edit_account_request->area_id
-            ]);
+            $exists = TAAreaOfKnowledge::where('ta_id', $ta_edit_account_request->ta_id)
+                ->where('area_id', $ta_edit_account_request->area_id)
+                ->exists();
+
+            if (!$exists) {
+                TAAreaOfKnowledge::create([
+                    'ta_id' => $ta_edit_account_request->ta_id,
+                    'area_id' => $ta_edit_account_request->area_id
+                ]);
+            }
         }
 
         return redirect()->route('home')->with('success', 'Request approved successfully');
@@ -72,7 +75,7 @@ class HomeController extends Controller
     {
         // dd($request->all());
 
-        $ta_edit_account_request = TAEditAreasOfKnowledgeRequest::find($request->input('request_id'));
+        $ta_edit_account_request = TAEditAreasOfKnowledgeRequest::find($request->input('ta_id'));
         $ta_edit_account_request->request_status = 'Rejected';
         $ta_edit_account_request->save();
 

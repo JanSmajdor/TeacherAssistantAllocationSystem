@@ -66,6 +66,11 @@ class UserController extends Controller
             return redirect()->back()->with('success', 'All Availability has been cleared.');
         }
 
+        if (empty($ta_areas_of_knowledge)) {
+            TAAreaOfKnowledge::where('ta_id', $ta_id)->delete();
+            return redirect()->back()->with('success', 'All Areas of Knowledge have been cleared.');
+        }
+
         if (count($available_from) != count($available_to)) {
             return redirect()->back()->with('error', 'Please ensure that all start times have an end time.');
         }
@@ -108,8 +113,6 @@ class UserController extends Controller
                     ]
                 );
             }        
-        } else {
-            TAAreaOfKnowledge::where('ta_id', $ta_id)->delete();
         }
         return redirect()->back()->with('success', 'Account details form submitted successfully.');
     }
