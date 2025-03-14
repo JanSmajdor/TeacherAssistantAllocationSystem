@@ -47,7 +47,7 @@ class UserController extends Controller
 
         $all_areas = AreaOfKnowledge::all();
 
-        $ta_areas_of_knowledge = TAAreaOfKnowledge::where('ta_id', $user->id)->pluck('area_id')->toArray();
+        $ta_areas_of_knowledge = TAAreaOfKnowledge::where('ta_id', $ta_details->ta_id)->pluck('area_id')->toArray();
 
         return view('edit_account', compact('ta_details', 'availability', 'all_areas', 'ta_areas_of_knowledge'));
     }

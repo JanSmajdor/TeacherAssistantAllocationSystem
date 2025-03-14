@@ -75,18 +75,22 @@
                     <div class="card-body">
                         <h4>Areas of Knowledge</h4>
                         <div id="areas-container">
-                            @foreach($ta_areas_of_knowledge as $area)
+                            @forelse($ta_areas_of_knowledge as $area)
                             <div class="mb-3 area-entry">
                                 <input type="hidden" name="areas_of_knowledge[]" value="{{ $area }}">
-                                <input type="text" value="{{ $all_areas->find($area)->name }}" class="form-control" readonly>
+                                <input type="text" value="{{ $all_areas->firstWhere('id', $area)->name }}" class="form-control" readonly>
                                 <button type="button" class="btn btn-danger remove-area">Remove</button>
                             </div>
-                            @endforeach
+                            @empty
+                            <p>No areas of knowledge assigned.</p>
+                            @endforelse
                         </div>
                         <div class="input-group mb-3">
                             <select id="new-area" class="form-select">
                                 @foreach($all_areas as $area)
-                                <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                    @if(!in_array($area->id, $ta_areas_of_knowledge))
+                                    <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                    @endif
                                 @endforeach
                             </select>
                             <button type="button" class="btn btn-primary" id="add-area">Add Area</button>
