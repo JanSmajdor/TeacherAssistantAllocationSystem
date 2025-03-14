@@ -12,3 +12,4 @@ Route::post('/admin/areas_of_knolwedge/create', [App\Http\Controllers\AdminContr
 Route::get('/admin/modules/show', [App\Http\Controllers\AdminController::class, 'showModuleForm'])->name('admin.create_new_module.show');
 Route::post('/admin/modules/create', [App\Http\Controllers\AdminController::class, 'createModule'])->name('admin.create_new_module.create');
 Route::post('/edit_account/approve', [App\Http\Controllers\HomeController::class, 'approve'])->name('approve_edit_account');
+Route::post('/edit_account/deny', [App\Http\Controllers\HomeController::class, 'deny'])->name('deny_edit_account');

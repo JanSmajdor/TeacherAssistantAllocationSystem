@@ -30,6 +30,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if($admin_edit_account_requests->isEmpty())
+                                <tr>
+                                    <td class="text-center" colspan="3">No requests to display at this time.</td>
+                                </tr>
+                                @else
                                 @foreach($admin_edit_account_requests as $request)
                                 <tr>
                                     <td>{{ $request->teaching_assistant->user->first_name }} {{ $request->teaching_assistant->user->last_name }}</td>
@@ -70,14 +75,19 @@
                                         <form id="approve-form-{{ $request->id }}" action="{{ route('approve_edit_account') }}" method="POST" style="display: none;">
                                             @csrf
                                             <input type="hidden" name="request_id" value="{{ $request->id }}">
+                                            <button type="button" class="btn btn-success" onclick="event.preventDefault(); document.getElementById('approve-form-{{ $request->id }}').submit();">Approve</button>
                                         </form>
-                                        <button type="button" class="btn btn-success" onclick="event.preventDefault(); document.getElementById('approve-form-{{ $request->id }}').submit();">Approve</button>
-                                        <button type="button" class="btn btn-danger">Deny</button>
+                                        <form id="deny-form-{{ $request->id }}" action="{{ route('deny_edit_account') }}" method="POST" style="display: none;">
+                                            @csrf
+                                            <input type="hidden" name="request_id" value="{{ $request->id }}">
+                                            <button type="button" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('deny-form-{{ $request->id }}').submit();">Deny</button>
+                                        </form>
                                       </div>
                                     </div>
                                   </div>
                                 </div>
                                 @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
@@ -93,7 +103,7 @@
                     @if ($user->role == 'Teaching Assistant')
                     
                     <div class="edit-account-details-table">
-                        <h3>{{$user->first_name}}'s Requests ({{ $ta_count }}) </h3>
+                        <h3>{{$user->first_name}}'s Requests  </h3>
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
@@ -104,14 +114,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($ta_edit_account_requests as $request)
                                 <tr>
-                                    <td>{{ $request->created_at }}</td>
-                                    <td>Edit Account Details</td>
-                                    <td>{{ $request->request_status }}</td>
-                                    <td>{{ $request->updated_at }}</td>
+                                    <td class="text-center" colspan="4">No requests to display at this time.</td>
                                 </tr>
-                                @endforeach
                             </tbody>
                         </table>
                     </div>
