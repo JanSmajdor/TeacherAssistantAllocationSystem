@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\AreaOfKnowledge;
-use App\Models\TAAreaOfKnowledge;
 use App\Models\Availability;
+use App\Models\TAAreaOfKnowledge;
 use App\Models\TAEditAreasOfKnowledgeRequest;
 use App\Models\TeachingAssistant;
 
-class UserController extends Controller 
+class TeacherAssistantController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -24,10 +24,25 @@ class UserController extends Controller
     }
 
     /**
-     * Show the edit account page.
+     * Show the application dashboard.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
+
+     public function index()
+     {
+        $user = Auth::user();
+        $ta_details = TeachingAssistant::where('user_id', $user->id)->first();
+
+        $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $ta_details->id)
+        ->with('teaching_assistant.user')
+        ->get();
+
+        $ta_count = $ta_edit_account_requests->count();
+
+        return view('teacherAssistantDashboard', compact('user', 'ta_edit_account_requests', 'ta_count'));
+     }
+
     public function show()
     {
         $user = Auth::user();
@@ -52,7 +67,8 @@ class UserController extends Controller
         return view('edit_account', compact('ta_details', 'availability', 'all_areas', 'ta_areas_of_knowledge'));
     }
 
-    public function edit(Request $request) {
+    public function edit(Request $request) 
+    {
 
         $loggedIn_userid = Auth::user()->id;
         $ta_id = TeachingAssistant::where('user_id', $loggedIn_userid)->first()->id;

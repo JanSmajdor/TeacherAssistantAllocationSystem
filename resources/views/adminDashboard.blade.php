@@ -1,6 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -16,9 +17,6 @@
 
                     <p>Welcome to your {{ $user->role }} dashboard, {{ $user->first_name }}</p>
 
-                    <!-- Admin Dashboard Content -->
-                    @if ($user->role == 'Admin')
-                    
                     <div class="edit-account-details-table">
                         <h3>Pending Requests ({{ $admin_count }}) </h3>
                         <table class="table table-striped table-bordered">
@@ -65,15 +63,15 @@
                                         <!-- Add more details as needed -->
                                       </div>
                                       <div class="modal-footer">
-                                        <form id="approve-form-{{ $request->id }}" action="{{ route('approve_edit_account') }}" method="POST" style="display: none;">
+                                        <form id="approve-form-{{ $request->id }}" action="{{ route('approve_edit_account') }}" method="POST" style="display: inline;">
                                             @csrf
                                             <input type="hidden" name="ta_id" value="{{ $request->ta_id }}">
-                                            <button type="button" class="btn btn-success" onclick="event.preventDefault(); document.getElementById('approve-form-{{ $request->id }}').submit();">Approve</button>
+                                            <button type="submit" class="btn btn-success">Approve</button>
                                         </form>
-                                        <form id="deny-form-{{ $request->id }}" action="{{ route('deny_edit_account') }}" method="POST" style="display: none;">
+                                        <form id="deny-form-{{ $request->id }}" action="{{ route('deny_edit_account') }}" method="POST" style="display: inline;">
                                             @csrf
                                             <input type="hidden" name="ta_id" value="{{ $request->ta_id }}">
-                                            <button type="button" class="btn btn-danger" onclick="event.preventDefault(); document.getElementById('deny-form-{{ $request->id }}').submit();">Deny</button>
+                                            <button type="submit" class="btn btn-danger">Deny</button>
                                         </form>
                                       </div>
                                     </div>
@@ -84,37 +82,6 @@
                             </tbody>
                         </table>
                     </div>
-
-                    @endif
-
-                    <!-- Module Leader Dashboard Content -->
-                    @if ($user->role == 'Module Leader')
-
-                    @endif
-
-                    <!-- Teaching Assistant Dashboard Content -->
-                    @if ($user->role == 'Teaching Assistant')
-                    
-                    <div class="edit-account-details-table">
-                        <h3>{{$user->first_name}}'s Requests  </h3>
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Created</th>
-                                    <th>Request Type</th>
-                                    <th>Request Status</th>
-                                    <th>Viewed</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td class="text-center" colspan="4">No requests to display at this time.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    @endif
                 </div>
             </div>
         </div>

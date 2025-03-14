@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\TAEditAreasOfKnowledgeRequest;
+use App\Models\TAAreaOfKnowledge;
 use App\Models\AreaOfKnowledge;
 use App\Models\ModuleAreasOfKnowledge;
 use App\Models\Module;
@@ -11,6 +14,26 @@ use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+
+        // get any ta edit account details requests as well as their user details
+        $admin_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('request_status', 'Pending')
+            ->with(['teaching_assistant.user', 'area_of_knowledge'])
+            ->get()
+            ->groupBy('ta_id')
+            ->map(function ($requests) {
+                $firstRequest = $requests->first();
+                $firstRequest->areas_of_knowledge = $requests->pluck('area_of_knowledge.name')->toArray();
+                return $firstRequest;
+            });
+
+        $admin_count = $admin_edit_account_requests->count();
+
+        return view('adminDashboard', compact('user', 'admin_edit_account_requests', 'admin_count'));
+    }
+
     public function showAreaOfKnowledgeForm()
     {
         return view('new_area_of_knowledge');
@@ -70,5 +93,44 @@ class AdminController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Error Adding Module to the Database:' . $e->getMessage());
         }
+    }
+
+    public function approve(Request $request)
+    {
+        $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $request->input('ta_id'))
+            ->where('request_status', 'Pending')
+            ->get();
+
+        foreach ($ta_edit_account_requests as $ta_edit_account_request) {
+            $ta_edit_account_request->request_status = 'Approved';
+            $ta_edit_account_request->save();
+
+            $exists = TAAreaOfKnowledge::where('ta_id', $ta_edit_account_request->ta_id)
+                ->where('area_id', $ta_edit_account_request->area_id)
+                ->exists();
+
+            if (!$exists) {
+                TAAreaOfKnowledge::create([
+                    'ta_id' => $ta_edit_account_request->ta_id,
+                    'area_id' => $ta_edit_account_request->area_id
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.dashboard')->with('success', 'Requests approved successfully');
+    }
+
+    public function deny(Request $request)
+    {
+        $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $request->input('ta_id'))
+            ->where('request_status', 'Pending')
+            ->get();
+
+        foreach ($ta_edit_account_requests as $ta_edit_account_request) {
+            $ta_edit_account_request->request_status = 'Denied';
+            $ta_edit_account_request->save();
+        }
+
+        return redirect()->route('admin.dashboard')->with('success', 'Requests denied successfully');
     }
 }
