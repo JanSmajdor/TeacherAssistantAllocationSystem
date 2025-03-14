@@ -108,6 +108,8 @@ class UserController extends Controller
                     ]
                 );
             }        
+        } else {
+            TAAreaOfKnowledge::where('ta_id', $ta_id)->delete();
         }
         return redirect()->back()->with('success', 'Account details form submitted successfully.');
     }
