@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('ta_availability', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ta_id');
-            $table->datetime('available_from');
-            $table->datetime('available_to');
+            $table->datetime('available_from')->nullable();
+            $table->datetime('available_to')->nullable();
             $table->timestamps();
 
             $table->foreign('ta_id')->references('id')->on('teaching_assistants');
