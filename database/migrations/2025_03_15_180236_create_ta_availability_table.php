@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ta_edit_areas_of_knowledge_request', function (Blueprint $table) {
+        Schema::create('ta_availability', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('ta_id');
-            $table->unsignedBigInteger('area_id');
-            $table->enum('request_status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
-            $table->boolean('hidden')->default(false);
+            $table->foreign('ta_id')->references('id')->on('users')->onDelete('cascade');
+            $table->date('available_date');
             $table->timestamps();
 
             $table->foreign('ta_id')->references('id')->on('teaching_assistants')->onDelete('cascade');
-            $table->foreign('area_id')->references('id')->on('areas_of_knowledge')->onDelete('cascade');
         });
     }
 
@@ -29,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ta_edit_areas_of_knowledge_request');
+        Schema::dropIfExists('ta_availability');
     }
 };
