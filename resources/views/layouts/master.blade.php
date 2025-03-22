@@ -74,6 +74,10 @@
                                     <a class="dropdown-item" href="{{ route('admin.create_new_module.show') }}">Create New Module</a>
                                     @endif
 
+                                    @if (Auth::user()->role == 'Module Leader')
+                                    <a class="dropdown-item" href="{{ route('show_create_booking') }}">Create a Booking</a>
+                                    @endif
+
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
                                         @csrf
                                     </form>

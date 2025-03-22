@@ -32,3 +32,5 @@ Route::get('/module-leader-dashboard', [ModuleLeaderController::class, 'index'])
 Route::get('/ta-dashboard', [TeacherAssistantController::class, 'index'])->name('ta.dashboard');
 Route::post('/edit_account/approve', [AdminController::class, 'approve'])->name('approve_edit_account');
 Route::post('/edit_account/deny', [AdminController::class, 'deny'])->name('deny_edit_account');
+Route::get('/create_booking', [ModuleLeaderController::class, 'show'])->name('show_create_booking');
+Route::post('/create_booking', [ModuleLeaderController::class, 'store'])->name('create_booking');
