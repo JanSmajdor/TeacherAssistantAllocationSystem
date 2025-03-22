@@ -29,9 +29,20 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if($ta_edit_account_requests->isEmpty())
                                 <tr>
-                                    <td class="text-center" colspan="4">No requests to display at this time.</td>
+                                    <td class="text-center" colspan="5">No requests to display at this time.</td>
                                 </tr>
+                                @else
+                                @foreach($ta_edit_account_requests as $request)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($request->created_at)->format('d/m/Y')}}</td>
+                                    <td>Edit Account Details</td>
+                                    <td>{{ $request->request_status }}</td>
+                                    <td>{{\Carbon\Carbon::parse($request->created_at)->format('d/m/Y H:m')}}</td>
+                                </tr>
+                                @endforeach
+                                @endif
                             </tbody>
                         </table>
                     </div>
