@@ -11,6 +11,7 @@ class BookingRequest extends Model
     protected $fillable = [
         'module_id',
         'module_leader_id',
+        'request_batch_id',
         'num_tas_requested',
         'date_from',
         'date_to',

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('module_id');
             $table->unsignedBigInteger('module_leader_id');
+            $table->unsignedBigInteger('request_batch_id');
             $table->integer('num_tas_requested');
             $table->datetime('date_from');
             $table->datetime('date_to');
