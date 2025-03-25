@@ -20,6 +20,7 @@ return new class extends Migration
             $table->datetime('date_to')->nullable(false);
             $table->enum('booking_type', ['Lecture', 'Lab', 'Seminar', 'Marking', 'Other'])->nullable(false);
             $table->enum('site', ['Site 1', 'Site 2', 'Site 3'])->nullable(false);
+            $table->unsignedBigInteger('request_batch_id');
             $table->enum('status', ['Pending', 'Assigned', 'Cancelled'])->default('Pending')->nullable(false);
             $table->timestamps();
 
@@ -33,10 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('ta_bookings', function (Blueprint $table) {
-            $table->dropForeign(['booking_id']);
-        });
-
         Schema::dropIfExists('bookings');
     }
 };

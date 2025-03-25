@@ -4,19 +4,19 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class BookingRequest extends Model
+class Bookings extends Model
 {
-    protected $table = 'booking_requests';
+    protected $table = 'bookings';
 
     protected $fillable = [
         'module_id',
         'module_leader_id',
-        'request_batch_id',
         'num_tas_requested',
         'date_from',
         'date_to',
         'booking_type',
         'site',
+        'request_batch_id',
         'status',
     ];
 

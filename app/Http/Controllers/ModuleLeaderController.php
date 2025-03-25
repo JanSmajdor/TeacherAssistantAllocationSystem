@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Module;
 use Carbon\Carbon;
-use App\Models\BookingRequest;
+use App\Models\Bookings; // Updated to use the Bookings model
 
 class ModuleLeaderController extends Controller
 {
@@ -14,8 +14,8 @@ class ModuleLeaderController extends Controller
     {
         $user = Auth::user();
 
-        // Group booking requests by module_leader_id and include their IDs
-        $bookingRequests = BookingRequest::where('module_leader_id', $user->id)
+        // Group bookings by module_leader_id and include their IDs
+        $bookingRequests = Bookings::where('module_leader_id', $user->id)
             ->select('id', 'module_id', 'module_leader_id', 'request_batch_id', 'num_tas_requested', 'date_from', 'date_to', 'booking_type', 'site', 'status', 'created_at', 'updated_at')
             ->orderBy('date_from', 'asc')
             ->get()
@@ -48,10 +48,10 @@ class ModuleLeaderController extends Controller
         $dateFrom = Carbon::parse($validated['date_from']);
         $dateTo = Carbon::parse($validated['date_to']);
 
-        $requestBatchId = BookingRequest::max('request_batch_id') + 1;
+        $requestBatchId = Bookings::max('request_batch_id') + 1;
 
-        // Create the initial booking request
-        BookingRequest::create([
+        // Create the initial booking
+        Bookings::create([
             'module_id' => $validated['module_id'],
             'module_leader_id' => auth()->id(),
             'request_batch_id' => $requestBatchId,
@@ -63,12 +63,12 @@ class ModuleLeaderController extends Controller
             'status' => 'Pending',
         ]);
 
-        // If repeat weeks are specified, create additional booking requests
+        // If repeat weeks are specified, create additional bookings
         for ($i = 1; $i <= $repeatWeeks - 1; $i++) {
             $newDateFrom = $dateFrom->copy()->addWeeks($i);
             $newDateTo = $dateTo->copy()->addWeeks($i);
 
-            BookingRequest::create([
+            Bookings::create([
                 'module_id' => $validated['module_id'],
                 'module_leader_id' => auth()->id(),
                 'request_batch_id' => $requestBatchId,
@@ -81,6 +81,6 @@ class ModuleLeaderController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Booking request(s) submitted successfully.');
+        return redirect()->back()->with('success', 'Booking(s) submitted successfully.');
     }
 }
