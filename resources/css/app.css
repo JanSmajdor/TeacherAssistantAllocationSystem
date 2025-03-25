@@ -24,6 +24,15 @@ body .py-4 {
 .btn.remove-choice {
     margin: 0.5em;
     margin-left: 0;
-    font-size: smaller;
     width: 5.8em;
+}
+
+.btn.remove-area {
+    margin: 0.5em;
+    margin-left: 0;
+    width: 5.8em;
+}
+
+#add-availability {
+    margin-top: 1em;
 }

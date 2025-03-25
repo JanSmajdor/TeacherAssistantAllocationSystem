@@ -28,6 +28,16 @@ class AdminController extends Controller
                 $firstRequest->areas_of_knowledge = $requests->pluck('area_of_knowledge.name')->toArray();
                 return $firstRequest;
             });
+        
+        $admin_module_leader_booking_requests = BookingRequest::where('status', 'Pending')
+            ->with(['module', 'module_leader'])
+            ->get()
+            ->groupBy('module_leader_id')
+            ->map(function ($requests) {
+                $firstRequest = $requests->first();
+                $firstRequest->modules = $requests->pluck('module.module_name')->toArray();
+                return $firstRequest;
+            });
 
         $admin_count = $admin_edit_account_requests->count();
 

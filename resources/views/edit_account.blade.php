@@ -66,7 +66,14 @@
                             </div>
                             @endforelse
                         </div>
-                        <button type="button" class="btn btn-primary" id="add-availability">Add Availability</button>
+                        <!-- Recurring Availability -->
+                        <div class="mt-3">
+                            <label for="repeat_weeks" class="form-label">Repeat for (Weeks):</label>
+                            <input type="number" name="repeat_weeks" id="repeat_weeks" class="form-control" min="1" placeholder="Enter number of weeks (optional)">
+                            <small class="text-muted">Leave blank if this availability is for a single occurrence.</small>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="add-availability">Add Another Availability</button>
+
                     </div>
 
                     <hr>

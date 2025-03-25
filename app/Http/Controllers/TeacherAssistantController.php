@@ -69,11 +69,11 @@ class TeacherAssistantController extends Controller
 
     public function edit(Request $request) 
     {
-
         $loggedIn_userid = Auth::user()->id;
         $ta_id = TeachingAssistant::where('user_id', $loggedIn_userid)->first()->id;
         $available_from = $request->input('start_times');
         $available_to = $request->input('end_times');
+        $repeat_weeks = $request->input('repeat_weeks', 0); // Default to 0 if not provided
         $ta_areas_of_knowledge = $request->input('areas_of_knowledge');
         $ta_contracted_hours = $request->input('contracted_hours');
 
@@ -98,24 +98,40 @@ class TeacherAssistantController extends Controller
         // Update teaching_assistants table with contracted hours
         TeachingAssistant::where('id', $ta_id)->update(['contracted_hours' => $ta_contracted_hours]);
 
+        // Clear existing availability
+        Availability::where('ta_id', $ta_id)->delete();
+
         // Populate ta_availability table
         foreach ($available_from as $key => $start_time) {
             $end_time = $available_to[$key];
-            Availability::updateOrCreate(
-                [
-                    'ta_id' => $ta_id,
-                    'available_from' => $start_time,
-                    'available_to' => $end_time
-                ],
-                [
-                    'available_from' => $start_time,
-                    'available_to' => $end_time
-                ]
-            );
+
+            // Add the initial availability
+            Availability::create([
+                'ta_id' => $ta_id,
+                'available_from' => $start_time,
+                'available_to' => $end_time,
+            ]);
+
+            // Add recurring availability if specified
+            if ($repeat_weeks > 0) {
+                $start_date = \Carbon\Carbon::parse($start_time);
+                $end_date = \Carbon\Carbon::parse($end_time);
+
+                for ($i = 1; $i <= $repeat_weeks - 1; $i++) {
+                    $new_start_time = $start_date->copy()->addWeeks($i);
+                    $new_end_time = $end_date->copy()->addWeeks($i);
+
+                    Availability::create([
+                        'ta_id' => $ta_id,
+                        'available_from' => $new_start_time,
+                        'available_to' => $new_end_time,
+                    ]);
+                }
+            }
         }
 
         // Add Areas of knowledge to request table
-        if(!empty($ta_areas_of_knowledge)) {
+        if (!empty($ta_areas_of_knowledge)) {
             foreach ($ta_areas_of_knowledge as $area_id) {
                 TAEditAreasOfKnowledgeRequest::updateOrCreate(
                     [
@@ -130,6 +146,7 @@ class TeacherAssistantController extends Controller
                 );
             }        
         }
+
         return redirect()->back()->with('success', 'Account details form submitted successfully.');
     }
 }
