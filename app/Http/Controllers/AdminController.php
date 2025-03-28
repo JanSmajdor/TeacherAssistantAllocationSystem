@@ -11,6 +11,7 @@ use App\Models\AreaOfKnowledge;
 use App\Models\ModuleAreasOfKnowledge;
 use App\Models\Module;
 use Illuminate\Support\Facades\DB;
+use App\Models\Bookings;
 
 class AdminController extends Controller
 {
@@ -29,19 +30,38 @@ class AdminController extends Controller
                 return $firstRequest;
             });
         
-        $admin_module_leader_booking_requests = BookingRequest::where('status', 'Pending')
-            ->with(['module', 'module_leader'])
-            ->get()
-            ->groupBy('module_leader_id')
-            ->map(function ($requests) {
-                $firstRequest = $requests->first();
-                $firstRequest->modules = $requests->pluck('module.module_name')->toArray();
-                return $firstRequest;
-            });
 
         $admin_count = $admin_edit_account_requests->count();
 
-        return view('adminDashboard', compact('user', 'admin_edit_account_requests', 'admin_count'));
+        // Fetch booking requests with status 'Pending' or 'Manual Assignment Pending'
+        $booking_requests = Bookings::whereIn('status', ['Pending', 'Auto Matched', 'Manual Assignment Pending'])
+            ->with(['module', 'moduleLeader'])
+            ->get();
+
+        // Dynamically determine a suggested TA for each booking
+        foreach ($booking_requests as $booking) {
+            $booking->suggested_ta = $this->getSuggestedTA($booking);
+        }
+
+        return view('adminDashboard', compact('user', 'admin_edit_account_requests', 'admin_count', 'booking_requests'));
+    }
+
+    /**
+     * Determine a suggested TA for a booking.
+     */
+    private function getSuggestedTA($booking)
+    {
+        // Example criteria: Find a TA with matching areas of knowledge and availability
+        return User::where('role', 'Teaching Assistant')
+            ->whereHas('teachingAssistant.areasOfKnowledge', function ($query) use ($booking) {
+                $query->whereIn('area_id', $booking->module->areasOfKnowledge->pluck('id'));
+            })
+            ->whereHas('teachingAssistant.availability', function ($query) use ($booking) {
+                $query->where('available_from', '<=', $booking->date_from)
+                      ->where('available_to', '>=', $booking->date_to);
+            })
+            ->with('teachingAssistant')
+            ->first();
     }
 
     public function showAreaOfKnowledgeForm()

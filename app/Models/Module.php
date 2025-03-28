@@ -27,4 +27,9 @@ class Module extends Model
     ];
 
     //when moduleLeader Model gets created, add a belongsToOne relationship here
+
+    public function areasOfKnowledge()
+    {
+        return $this->belongsToMany(AreaOfKnowledge::class, 'module_areas_of_knowledge', 'module_id', 'area_id');
+    }
 }

@@ -44,6 +44,11 @@ class TeachingAssistant extends Model
         return $this->hasMany(Availability::class, 'ta_id');
     }
 
+    public function bookings()
+    {
+        return $this->belongsToMany(Bookings::class, 'ta_bookings', 'ta_id', 'booking_id');
+    }
+
     public function isProfileComplete()
     {
         return !empty($this->contracted_hours) && $this->availability()->exists() && $this->areasOfKnowledge()->exists();

@@ -82,6 +82,83 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <div class="booking-requests-table">
+                        <h3>Booking Requests</h3>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Module</th>
+                                    <th>Booking Type</th>
+                                    <th>Requested TAs</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($booking_requests->isEmpty())
+                                <tr>
+                                    <td class="text-center" colspan="5">No booking requests to display at this time.</td>
+                                </tr>
+                                @else
+                                @foreach($booking_requests as $booking)
+                                <tr>
+                                    <td>{{ $booking->module->module_name }} ({{ $booking->module->module_code }})</td>
+                                    <td>{{ $booking->booking_type }}</td>
+                                    <td>{{ $booking->num_tas_requested }}</td>
+                                    <td>{{ $booking->status }}</td>
+                                    <td>
+                                        <button class="btn btn-primary" data-toggle="modal" data-target="#bookingModal-{{ $booking->id }}">View Details</button>
+                                    </td>
+                                </tr>
+
+                                <!-- Modal -->
+                                <div class="modal fade" id="bookingModal-{{ $booking->id }}" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel-{{ $booking->id }}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="bookingModalLabel-{{ $booking->id }}">Booking Details</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><strong>Module:</strong> {{ $booking->module->module_name }} ({{ $booking->module->module_code }})</p>
+                                                <p><strong>Booking Type:</strong> {{ $booking->booking_type }}</p>
+                                                <p><strong>Requested TAs:</strong> {{ $booking->num_tas_requested }}</p>
+                                                <p><strong>Date From:</strong> {{ \Carbon\Carbon::parse($booking->date_from)->format('d/m/Y') }}</p>
+                                                <p><strong>Date To:</strong> {{ \Carbon\Carbon::parse($booking->date_to)->format('d/m/Y') }}</p>
+                                                <p><strong>Status:</strong> {{ $booking->status }}</p>
+                                                <hr>
+                                                <h5>Suggested TA Match</h5>
+                                                @if($booking->suggested_ta)
+                                                <p><strong>Name:</strong> {{ $booking->suggested_ta->first_name }} {{ $booking->suggested_ta->last_name }}</p>
+                                                <p><strong>Email:</strong> {{ $booking->suggested_ta->email }}</p>
+                                                @else
+                                                <p>No TA match found for this booking.</p>
+                                                @endif
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form id="approve-booking-form-{{ $booking->id }}" action="{{ route('admin.dashboard') }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                                    <button type="submit" class="btn btn-success">Approve</button>
+                                                </form>
+                                                <form id="deny-booking-form-{{ $booking->id }}" action="{{ route('admin.dashboard') }}" method="POST" style="display: inline;">
+                                                    @csrf
+                                                    <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                                    <button type="submit" class="btn btn-danger">Deny</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
         </div>
