@@ -40,6 +40,13 @@
                                     <td>Edit Account Details</td>
                                     <td>{{ $request->request_status }}</td>
                                     <td>{{\Carbon\Carbon::parse($request->created_at)->format('d/m/Y H:m')}}</td>
+                                    <td class="text-center">
+                                        <form action="{{ route('request_hide') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="request_id" value="{{ $request->id }}">
+                                            <button type="submit" class="btn btn-danger btn-sm">X</button>
+                                        </form>
+                                    </td>
                                 </tr>
                                 @endforeach
                                 @endif

@@ -35,6 +35,7 @@ class TeacherAssistantController extends Controller
         $ta_details = TeachingAssistant::where('user_id', $user->id)->first();
 
         $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $ta_details->id)
+        ->where('hidden', '0')
         ->with('teaching_assistant.user')
         ->get();
 
@@ -148,5 +149,19 @@ class TeacherAssistantController extends Controller
         }
 
         return redirect()->back()->with('success', 'Account details form submitted successfully.');
+    }
+
+    public function hideRequest(Request $request)
+    {
+        $request_id = $request->input('request_id');
+        $ta_edit_account_request = TAEditAreasOfKnowledgeRequest::find($request_id);
+
+        if ($ta_edit_account_request) {
+            $ta_edit_account_request->hidden = 1;
+            $ta_edit_account_request->save();
+            return redirect()->back()->with('success', 'Request hidden successfully.');
+        }
+
+        return redirect()->back()->with('error', 'Request not found.');
     }
 }
