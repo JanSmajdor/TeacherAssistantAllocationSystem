@@ -139,12 +139,12 @@
                                                 @endif
                                             </div>
                                             <div class="modal-footer">
-                                                <form id="approve-booking-form-{{ $booking->id }}" action="{{ route('admin.dashboard') }}" method="POST" style="display: inline;">
+                                                <form id="approve-booking-form-{{ $booking->id }}" action="{{ route('approve_booking') }}" method="POST" style="display: inline;">
                                                     @csrf
                                                     <input type="hidden" name="booking_id" value="{{ $booking->id }}">
                                                     <button type="submit" class="btn btn-success">Approve</button>
                                                 </form>
-                                                <form id="deny-booking-form-{{ $booking->id }}" action="{{ route('admin.dashboard') }}" method="POST" style="display: inline;">
+                                                <form id="deny-booking-form-{{ $booking->id }}" action="{{ route('deny_booking') }}" method="POST" style="display: inline;">
                                                     @csrf
                                                     <input type="hidden" name="booking_id" value="{{ $booking->id }}">
                                                     <button type="submit" class="btn btn-danger">Deny</button>

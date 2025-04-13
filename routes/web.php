@@ -30,7 +30,9 @@ Route::post('/admin/modules/create', [App\Http\Controllers\AdminController::clas
 Route::get('/admin-dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 Route::get('/module-leader-dashboard', [ModuleLeaderController::class, 'index'])->name('module_leader.dashboard');
 Route::get('/ta-dashboard', [TeacherAssistantController::class, 'index'])->name('ta.dashboard');
-Route::post('/edit_account/approve', [AdminController::class, 'approve'])->name('approve_edit_account');
-Route::post('/edit_account/deny', [AdminController::class, 'deny'])->name('deny_edit_account');
+Route::post('/edit_account/approve', [AdminController::class, 'approveEditAccountRequest'])->name('approve_edit_account');
+Route::post('/edit_account/deny', [AdminController::class, 'denyEditAccountRequest'])->name('deny_edit_account');
+Route::post('/booking/accept', [AdminController::class, 'approveBooking'])->name('approve_booking');
+Route::post('/booking/decline', [AdminController::class, 'denyBooking'])->name('deny_booking');
 Route::get('/create_booking', [ModuleLeaderController::class, 'show'])->name('show_create_booking');
 Route::post('/create_booking', [ModuleLeaderController::class, 'store'])->name('create_booking');

@@ -12,6 +12,7 @@ use App\Models\ModuleAreasOfKnowledge;
 use App\Models\Module;
 use Illuminate\Support\Facades\DB;
 use App\Models\Bookings;
+use App\Models\TABookings;
 
 class AdminController extends Controller
 {
@@ -125,7 +126,7 @@ class AdminController extends Controller
         }
     }
 
-    public function approve(Request $request)
+    public function approveEditAccountRequest(Request $request)
     {
         $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $request->input('ta_id'))
             ->where('request_status', 'Pending')
@@ -150,7 +151,7 @@ class AdminController extends Controller
         return redirect()->route('admin.dashboard')->with('success', 'Requests approved successfully');
     }
 
-    public function deny(Request $request)
+    public function denyEditAccountReuest(Request $request)
     {
         $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $request->input('ta_id'))
             ->where('request_status', 'Pending')
@@ -162,5 +163,46 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.dashboard')->with('success', 'Requests denied successfully');
+    }
+
+    public function approveBooking(Request $request)
+    {
+        try {
+            // Find the booking request
+            $booking = Bookings::findOrFail($request->input('booking_id'));
+            $suggested_ta = $this->getSuggestedTA($booking);
+
+            // Update the status to 'Approved'
+            $booking->status = 'Approved';
+            $booking->save();
+
+            // Populate the ta_bookings table with the booking ID and corresponding TA ID
+            if ($suggested_ta) {
+                TABookings::create([
+                    'booking_id' => $booking->id,
+                    'ta_id' => $suggested_ta->id,
+                ]);
+            }
+
+            return redirect()->route('admin.dashboard')->with('success', 'Booking request approved successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.dashboard')->with('error', 'Error approving booking request: ' . $e->getMessage());
+        }
+    }
+
+    public function denyBooking(Request $request)
+    {
+        try {
+            // Find the booking request
+            $booking = Bookings::findOrFail($request->input('booking_id'));
+
+            // Update the status to 'Denied'
+            $booking->status = 'Denied';
+            $booking->save();
+
+            return redirect()->route('admin.dashboard')->with('success', 'Booking request denied successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.dashboard')->with('error', 'Error denying booking request: ' . $e->getMessage());
+        }
     }
 }

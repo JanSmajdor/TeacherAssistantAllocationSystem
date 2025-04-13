@@ -101,6 +101,14 @@
             dateFormat: "Y-m-d H:i",
             time_24hr: true,
             minDate: "today",
+            minTime: "07:00",
+            maxTime: "19:00",
+            disable: [
+                function(date) {
+                    // Disable Saturdays and Sundays
+                    return (date.getDay() === 6 || date.getDay() === 0);
+                }
+            ]
         });
 
         flatpickr('#date_to', {
@@ -108,6 +116,14 @@
             dateFormat: "Y-m-d H:i",
             time_24hr: true,
             minDate: "today",
+            minTime: "07:00",
+            maxTime: "19:00",
+            disable: [
+                function(date) {
+                    // Disable Saturdays and Sundays
+                    return (date.getDay() === 6 || date.getDay() === 0);
+                }
+            ]
         });
     });
 </script>

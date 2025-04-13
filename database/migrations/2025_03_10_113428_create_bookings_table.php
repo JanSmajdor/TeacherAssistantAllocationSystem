@@ -21,7 +21,7 @@ return new class extends Migration
             $table->enum('booking_type', ['Lecture', 'Lab', 'Seminar', 'Marking', 'Other'])->nullable(false);
             $table->enum('site', ['Site 1', 'Site 2', 'Site 3'])->nullable(false);
             $table->unsignedBigInteger('request_batch_id');
-            $table->enum('status', ['Pending', 'Assigned', 'Cancelled', 'Auto Matched', 'Pending Manual Assignment'])->default('Pending')->nullable(false);
+            $table->enum('status', ['Auto Matched', 'Pending Manual Assignment', 'Approved', 'Denied', 'Pending'])->default('Pending')->nullable(false);
             $table->timestamps();
 
             $table->foreign('module_id')->references('id')->on('modules')->onDelete('cascade');
