@@ -111,11 +111,13 @@ class ModuleLeaderController extends Controller
 
     private function findPerfectMatch($booking)
     {
-        $moduleAreas = $booking->module->areasOfKnowledge; // Ensure this relationship is correctly defined
+        $moduleAreas = $booking->module->areasOfKnowledge;
+        
         $tas = TeachingAssistant::with(['areasOfKnowledge', 'availability', 'bookings'])
             ->whereHas('areasOfKnowledge', function ($query) use ($moduleAreas) {
-                $query->whereIn('area_id', $moduleAreas->pluck('id')); // Use the relationship directly
+                $query->whereIn('area_id', $moduleAreas->pluck('id'));
             })
+            ->where('id', '!=', 1)
             ->get();
 
         foreach ($tas as $ta) {

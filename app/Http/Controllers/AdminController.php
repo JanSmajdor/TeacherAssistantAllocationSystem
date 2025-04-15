@@ -34,14 +34,20 @@ class AdminController extends Controller
 
         $admin_count = $admin_edit_account_requests->count();
 
-        // Fetch booking requests with status 'Pending' or 'Manual Assignment Pending'
-        $booking_requests = Bookings::whereIn('status', ['Pending', 'Auto Matched', 'Manual Assignment Pending'])
-            ->with(['module', 'moduleLeader'])
+        // Fetch booking requests with status 'Pending', 'Auto Matched', or 'Pending Manual Assignment'
+        $booking_requests = Bookings::whereIn('status', ['Pending', 'Auto Matched', 'Pending Manual Assignment'])
+            ->with(['module', 'moduleLeader', 'taBookings.ta'])
             ->get();
 
         // Dynamically determine a suggested TA for each booking
         foreach ($booking_requests as $booking) {
-            $booking->suggested_ta = $this->getSuggestedTA($booking);
+            if ($booking->status === 'Auto Matched' || $booking->status === 'Approved') {
+                // Fetch the auto-matched or manually assigned TA details
+                $booking->suggested_ta = $booking->taBookings->first()?->ta; // Ensure it's a single TA or null
+            } else {
+                // Use the matching algorithm for suggestions
+                $booking->suggested_ta = $this->getSuggestedTA($booking)->first(); // Get the first TA or null
+            }
         }
 
         return view('adminDashboard', compact('user', 'admin_edit_account_requests', 'admin_count', 'booking_requests'));
@@ -52,17 +58,15 @@ class AdminController extends Controller
      */
     private function getSuggestedTA($booking)
     {
-        // Example criteria: Find a TA with matching areas of knowledge and availability
         return User::where('role', 'Teaching Assistant')
-            ->whereHas('teachingAssistant.areasOfKnowledge', function ($query) use ($booking) {
-                $query->whereIn('area_id', $booking->module->areasOfKnowledge->pluck('id'));
-            })
             ->whereHas('teachingAssistant.availability', function ($query) use ($booking) {
                 $query->where('available_from', '<=', $booking->date_from)
                       ->where('available_to', '>=', $booking->date_to);
             })
-            ->with('teachingAssistant')
-            ->first();
+            ->with(['teachingAssistant' => function ($query) {
+                $query->select('id', 'user_id', 'contracted_hours'); // Ensure contracted_hours is included
+            }])
+            ->get();
     }
 
     public function showAreaOfKnowledgeForm()
@@ -203,6 +207,28 @@ class AdminController extends Controller
             return redirect()->route('admin.dashboard')->with('success', 'Booking request denied successfully.');
         } catch (\Exception $e) {
             return redirect()->route('admin.dashboard')->with('error', 'Error denying booking request: ' . $e->getMessage());
+        }
+    }
+
+    public function manuallyAssignTA(Request $request)
+    {
+        try {
+            // Find the booking request
+            $booking = Bookings::findOrFail($request->input('booking_id'));
+
+            // Update the status to 'Manually Assigned'
+            $booking->status = 'Approved';
+            $booking->save();
+
+            // Populate the ta_bookings table with the booking ID and corresponding TA ID
+            TABookings::create([
+                'booking_id' => $booking->id,
+                'ta_id' => $request->input('ta_id'),
+            ]);
+
+            return redirect()->route('admin.dashboard')->with('success', 'TA manually assigned successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.dashboard')->with('error', 'Error manually assigning TA: ' . $e->getMessage());
         }
     }
 }

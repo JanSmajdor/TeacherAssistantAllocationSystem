@@ -1,0 +1,8 @@
+.custom-modal-width {
+    max-width: 90%; 
+    width: auto; 
+}
+
+.modal-body {
+    overflow-x: auto; 
+}

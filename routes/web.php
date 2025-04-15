@@ -28,6 +28,7 @@ Route::get('/admin/areas_of_knolwedge/show', [App\Http\Controllers\AdminControll
 Route::post('/admin/areas_of_knolwedge/create', [App\Http\Controllers\AdminController::class, 'createAreaOfKnowledge'])->name('admin.areas_of_knowledge.create');
 Route::get('/admin/modules/show', [App\Http\Controllers\AdminController::class, 'showModuleForm'])->name('admin.create_new_module.show');
 Route::post('/admin/modules/create', [App\Http\Controllers\AdminController::class, 'createModule'])->name('admin.create_new_module.create');
+Route::post('/admin/bookings/manual_assign', [App\Http\Controllers\AdminController::class, 'manuallyAssignTA'])->name('admin.manually_assign_ta');
 Route::get('/admin-dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 Route::get('/module-leader-dashboard', [ModuleLeaderController::class, 'index'])->name('module_leader.dashboard');
 Route::get('/ta-dashboard', [TeacherAssistantController::class, 'index'])->name('ta.dashboard');
