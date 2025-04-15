@@ -13,6 +13,7 @@ use App\Models\Module;
 use Illuminate\Support\Facades\DB;
 use App\Models\Bookings;
 use App\Models\TABookings;
+use App\Models\SuggestedTA;
 
 class AdminController extends Controller
 {
@@ -173,17 +174,19 @@ class AdminController extends Controller
         try {
             // Find the booking request
             $booking = Bookings::findOrFail($request->input('booking_id'));
-            $suggested_ta = $this->getSuggestedTA($booking);
+
+            // Retrieve all suggested TAs for the booking
+            $suggested_tas = SuggestedTA::where('booking_id', $booking->id)->get();
 
             // Update the status to 'Approved'
             $booking->status = 'Approved';
             $booking->save();
 
-            // Populate the ta_bookings table with the booking ID and corresponding TA ID
-            if ($suggested_ta) {
+            // Populate the ta_bookings table with the booking ID and corresponding TA IDs
+            foreach ($suggested_tas as $suggested_ta) {
                 TABookings::create([
                     'booking_id' => $booking->id,
-                    'ta_id' => $suggested_ta->id,
+                    'ta_id' => $suggested_ta->ta_id,
                 ]);
             }
 

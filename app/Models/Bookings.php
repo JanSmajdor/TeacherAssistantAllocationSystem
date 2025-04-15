@@ -20,6 +20,11 @@ class Bookings extends Model
         'status',
     ];
 
+    protected $casts = [
+        'date_from' => 'datetime',
+        'date_to' => 'datetime',
+    ];
+
     public function module()
     {
         return $this->belongsTo(Module::class);

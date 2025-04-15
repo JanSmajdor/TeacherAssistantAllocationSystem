@@ -117,7 +117,7 @@ class ModuleLeaderController extends Controller
             ->whereHas('areasOfKnowledge', function ($query) use ($moduleAreas) {
                 $query->whereIn('area_id', $moduleAreas->pluck('id'));
             })
-            ->where('id', '!=', 1)
+            // ->where('id', '!=', 1)
             ->get();
 
         foreach ($tas as $ta) {
@@ -134,12 +134,43 @@ class ModuleLeaderController extends Controller
 
             $newBookingHours = $booking->date_from->diffInHours($booking->date_to);
             $totalHours = $weeklyHours + $newBookingHours;
+            
+            
+            // Check for schedule clashes
+            $hasScheduleClash = false;
+            foreach ($ta->bookings as $prevBooking) {
+                if ($prevBooking->date_from->isSameDay($booking->date_from)) {
+                    $prevSite = $prevBooking->site;
+                    $prevEndTime = $prevBooking->date_to;
 
-            if ($isAvailable && $totalHours <= ($ta->contracted_hours * 0.8)) {
+                    // Assume a function `getTravelTime($fromSite, $toSite)` exists to calculate travel time
+                    $travelTime = $this->getTravelTime($prevSite, $booking->site);
+
+                    if ($prevEndTime->addMinutes($travelTime)->greaterThan($booking->date_from)) {
+                        $hasScheduleClash = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($isAvailable && $totalHours <= ($ta->contracted_hours * 0.8) && !$hasScheduleClash) {
                 return $ta; // Return the first perfect match
             }
         }
 
         return null; // No perfect match found
+    }
+
+    // Helper function to calculate travel time between sites
+    private function getTravelTime($fromSite, $toSite)
+    {
+        // Define travel times between sites (in minutes)
+        $travelTimes = [
+            'Site 1' => ['Site 1' => 0, 'Site 2' => 20, 'Site 3' => 30],
+            'Site 2' => ['Site 1' => 20, 'Site 2' => 0, 'Site 3' => 10],
+            'Site 3' => ['Site 1' => 30, 'Site 2' => 10, 'Site 3' => 0],
+        ];
+
+        return $travelTimes[$fromSite][$toSite] ?? 0;
     }
 }
