@@ -11,6 +11,7 @@ use App\Models\TeachingAssistant;
 use App\Models\TAAreasOfKnowledge;
 use App\Models\Availability;
 use App\Models\TABookings;
+use App\Models\SuggestedTA;
 
 class ModuleLeaderController extends Controller
 {
@@ -92,10 +93,9 @@ class ModuleLeaderController extends Controller
 
             if ($matchedTa) {
                 // Store the match suggestion for Admin approval
-                TABookings::create([
+                SuggestedTA::create([
                     'ta_id' => $matchedTa->id,
                     'booking_id' => $booking->id,
-                    'status' => 'Suggested',
                 ]);
 
                 // Update booking status to auto_matched

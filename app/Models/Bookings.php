@@ -35,8 +35,8 @@ class Bookings extends Model
         return $this->belongsToMany(User::class, 'booking_request_user', 'booking_request_id', 'user_id');
     }
 
-    public function taBookings()
+    public function suggestedTa()
     {
-        return $this->hasMany(TABookings::class, 'booking_id');
+        return $this->hasMany(SuggestedTA::class, 'booking_id');
     }
 }

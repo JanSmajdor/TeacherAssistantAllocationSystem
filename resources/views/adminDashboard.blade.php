@@ -148,18 +148,16 @@
                                     @if ($booking->status == 'Pending Manual Assignment')
                                         <p>Please manually Assign a TA to the booking.</p>
                                     @else
-                                        @if($booking->suggested_ta)
-                                            <p><strong>Name:</strong> {{ $booking->suggested_ta->first_name }} {{ $booking->suggested_ta->last_name }}</p>
-                                            <p><strong>Email:</strong> {{ $booking->suggested_ta->email }}</p>
+                                        @foreach($booking->suggestedTa as $ta)
+                                            <p><strong>Name:</strong> {{ $ta->ta->user->first_name }} {{ $ta->ta->user->last_name }}</p>
+                                            <p><strong>Email:</strong> {{ $ta->ta->user->email }}</p>
                                             <p><strong>Areas of Knowledge:</strong></p>
                                             <ul>
-                                                @foreach($booking->suggested_ta->teachingAssistant->areasOfKnowledge as $area)
+                                                @foreach($ta->ta->areasOfKnowledge as $area)
                                                     <li>{{ $area->name }}</li>
                                                 @endforeach
                                             </ul>
-                                        @else
-                                            <p>No auto-matched TA available. Please manually assign a TA.</p>
-                                        @endif
+                                        @endforeach
                                     @endif
                                 </div>
 

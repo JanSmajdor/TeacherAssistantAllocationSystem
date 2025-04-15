@@ -35,18 +35,15 @@ class AdminController extends Controller
         $admin_count = $admin_edit_account_requests->count();
 
         // Fetch booking requests with status 'Pending', 'Auto Matched', or 'Pending Manual Assignment'
-        $booking_requests = Bookings::whereIn('status', ['Pending', 'Auto Matched', 'Pending Manual Assignment'])
-            ->with(['module', 'moduleLeader', 'taBookings.ta'])
+        $booking_requests = Bookings::whereIn('status', ['Auto Matched', 'Pending Manual Assignment'])
+            ->with(['module', 'moduleLeader', 'suggestedTa'])
             ->get();
         
         $booking_count = $booking_requests->count();
 
         // Dynamically determine a suggested TA for each booking
         foreach ($booking_requests as $booking) {
-            if ($booking->status === 'Auto Matched' || $booking->status === 'Approved') {
-                // Fetch the auto-matched or manually assigned TA details
-                $booking->suggested_ta = $booking->taBookings->first()?->ta; // Ensure it's a single TA or null
-            } else {
+            if ($booking->status === 'Pending Manual Assignment') {
                 // Use the matching algorithm for suggestions
                 $booking->suggested_ta = $this->getSuggestedTA($booking)->first(); // Get the first TA or null
             }
@@ -66,7 +63,7 @@ class AdminController extends Controller
                       ->where('available_to', '>=', $booking->date_to);
             })
             ->with(['teachingAssistant' => function ($query) {
-                $query->select('id', 'user_id', 'contracted_hours'); // Ensure contracted_hours is included
+                $query->select('id', 'user_id', 'contracted_hours');
             }])
             ->get();
     }
