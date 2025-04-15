@@ -262,6 +262,12 @@
         $('#bookingModal-' + bookingId).modal('hide');
         // Open the target modal
         $('#manualAssignmentModal-' + bookingId).modal('show');
+
+        // Attach event listener to the "X" button of the manual assignment modal
+        $('#manualAssignmentModal-' + bookingId + ' .close').off('click').on('click', function () {
+            console.log('Manual Assignment Modal "X" button clicked');
+            $('#manualAssignmentModal-' + bookingId).modal('hide'); // Close the modal
+        });
     }
 </script>
 
