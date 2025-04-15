@@ -89,7 +89,7 @@
                     </div>
 
                     <div class="booking-requests-table">
-                        <h3>Booking Requests</h3>
+                        <h3>Booking Requests ({{ $booking_count }})</h3>
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>

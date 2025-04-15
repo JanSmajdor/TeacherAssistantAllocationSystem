@@ -38,6 +38,8 @@ class AdminController extends Controller
         $booking_requests = Bookings::whereIn('status', ['Pending', 'Auto Matched', 'Pending Manual Assignment'])
             ->with(['module', 'moduleLeader', 'taBookings.ta'])
             ->get();
+        
+        $booking_count = $booking_requests->count();
 
         // Dynamically determine a suggested TA for each booking
         foreach ($booking_requests as $booking) {
@@ -50,7 +52,7 @@ class AdminController extends Controller
             }
         }
 
-        return view('adminDashboard', compact('user', 'admin_edit_account_requests', 'admin_count', 'booking_requests'));
+        return view('adminDashboard', compact('user', 'admin_edit_account_requests', 'admin_count', 'booking_requests', 'booking_count'));
     }
 
     /**
