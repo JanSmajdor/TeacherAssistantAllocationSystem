@@ -48,6 +48,24 @@ class User extends Authenticatable
         ];
     }
 
+    // check if the user is an admin
+    public function isAdmin(): bool
+    {
+        return $this->role === 'Admin';
+    }
+
+    // check if the user is a module leader
+    public function isModuleLeader(): bool
+    {
+        return $this->role === 'Module Leader';
+    }
+
+    // check if the user is a teaching assistant
+    public function isTA(): bool
+    {
+        return $this->role === 'Teaching Assistant';
+    }
+
     public function teachingAssistant()
     {
         return $this->hasOne(TeachingAssistant::class, 'user_id');
