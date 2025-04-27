@@ -15,13 +15,13 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Check if the user is an admin
+        // Check if the user is not an admin
         if (!$request->user() || !$request->user()->isAdmin()) {
-            session()->flash('error', 'You do not have x access.');
-            // If not, redirect to the home page or show an error
+
+            // If not, redirect to the previous page with error message
             return redirect()->back()->with('error', 'You do not have Admin access.');
         }
-        // Proceed with the request if the user is an admin
+        
         return $next($request);
     }
 }
