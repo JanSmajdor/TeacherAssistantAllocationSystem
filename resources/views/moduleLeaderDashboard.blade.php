@@ -86,7 +86,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td class="text-center" colspan="4">No requests to display at this time.</td>
+                                        <td class="text-center" colspan="5">No requests to display at this time.</td>
                                     </tr>
                                 @endif
                             </tbody>
