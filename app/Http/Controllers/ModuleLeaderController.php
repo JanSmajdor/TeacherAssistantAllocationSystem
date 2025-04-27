@@ -126,6 +126,22 @@ class ModuleLeaderController extends Controller
                 ->where('available_to', '>=', $booking->date_to)
                 ->isNotEmpty();
 
+            // Skip this TA if not available
+            if (!$isAvailable) {
+                continue;
+            }
+
+            // Check if TA has confirmed bookings that overlap with the requested booking
+            $hasOverlap = $ta->bookings->where(function ($prevBooking) use ($booking) {
+                return $prevBooking->date_from <= $booking->date_to &&
+                       $prevBooking->date_to >= $booking->date_from;
+            })->isNotEmpty();
+
+            // Skip this TA if there is an overlap
+            if ($hasOverlap) {
+                continue; 
+            }
+
             // Check if the booking exceeds 80% of contracted hours
             $weeklyHours = $ta->bookings->whereBetween('date_from', [
                 $booking->date_from->startOfWeek(),
@@ -134,8 +150,7 @@ class ModuleLeaderController extends Controller
 
             $newBookingHours = $booking->date_from->diffInHours($booking->date_to);
             $totalHours = $weeklyHours + $newBookingHours;
-            
-            
+                        
             // Check for schedule clashes
             $hasScheduleClash = false;
             foreach ($ta->bookings as $prevBooking) {
@@ -143,7 +158,6 @@ class ModuleLeaderController extends Controller
                     $prevSite = $prevBooking->site;
                     $prevEndTime = $prevBooking->date_to;
 
-                    // Assume a function `getTravelTime($fromSite, $toSite)` exists to calculate travel time
                     $travelTime = $this->getTravelTime($prevSite, $booking->site);
 
                     if ($prevEndTime->addMinutes($travelTime)->greaterThan($booking->date_from)) {
@@ -153,7 +167,7 @@ class ModuleLeaderController extends Controller
                 }
             }
 
-            if ($isAvailable && $totalHours <= ($ta->contracted_hours * 0.8) && !$hasScheduleClash) {
+            if ($totalHours <= ($ta->contracted_hours * 0.8) && !$hasScheduleClash) {
                 return $ta; // Return the first perfect match
             }
         }
@@ -161,10 +175,9 @@ class ModuleLeaderController extends Controller
         return null; // No perfect match found
     }
 
-    // Helper function to calculate travel time between sites
     private function getTravelTime($fromSite, $toSite)
     {
-        // Define travel times between sites (in minutes)
+        // travel times between sites (in minutes)
         $travelTimes = [
             'Site 1' => ['Site 1' => 0, 'Site 2' => 20, 'Site 3' => 30],
             'Site 2' => ['Site 1' => 20, 'Site 2' => 0, 'Site 3' => 10],

@@ -46,7 +46,7 @@ class AdminController extends Controller
         foreach ($booking_requests as $booking) {
             if ($booking->status === 'Pending Manual Assignment') {
                 // Use the matching algorithm for suggestions
-                $booking->suggested_ta = $this->getSuggestedTA($booking)->first(); // Get the first TA or null
+                $booking->suggested_ta = $this->getSuggestedTA($booking);
             }
         }
 
@@ -62,6 +62,12 @@ class AdminController extends Controller
             ->whereHas('teachingAssistant.availability', function ($query) use ($booking) {
                 $query->where('available_from', '<=', $booking->date_from)
                       ->where('available_to', '>=', $booking->date_to);
+            })
+            ->whereDoesntHave('teachingAssistant.bookings', function ($query) use ($booking) {
+                $query->where(function ($subQuery) use ($booking) {
+                    $subQuery->where('date_from', '<=', $booking->date_to)
+                             ->where('date_to', '>=', $booking->date_from);
+                });
             })
             ->with(['teachingAssistant' => function ($query) {
                 $query->select('id', 'user_id', 'contracted_hours');
