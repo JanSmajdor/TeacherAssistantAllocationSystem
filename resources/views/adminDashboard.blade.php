@@ -212,30 +212,32 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @if($booking->suggested_ta)
-                                            <tr>
-                                                <td>{{ $booking->suggested_ta->first_name }}</td>
-                                                <td>{{ $booking->suggested_ta->last_name }}</td>
-                                                <td>{{ $booking->suggested_ta->email }}</td>
-                                                <td>{{ $booking->suggested_ta->teachingAssistant->contracted_hours }}</td>
-                                                <td>
-                                                    @foreach($booking->suggested_ta->teachingAssistant->areasOfKnowledge as $area)
-                                                        <ul>{{ $area->name }}</ul>
-                                                    @endforeach
-                                                </td>
-                                                <td>
-                                                    <form id="manual-assign-form-{{ $booking->id }}" action="{{ route('admin.manually_assign_ta') }}" method="POST" style="display: inline;">
-                                                        @csrf
-                                                        <input type="hidden" name="ta_id" value="{{ $booking->suggested_ta->id }}">
-                                                        <input type="hidden" name="booking_id" value="{{ $booking->id }}">
-                                                        <button type="submit" class="btn btn-success btn-sm">Assign</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
+                                            @if($booking->suggested_ta && count($booking->suggested_ta) > 0)
+                                                @foreach($booking->suggested_ta as $ta)
+                                                    <tr>
+                                                        <td>{{ $ta->first_name }}</td>
+                                                        <td>{{ $ta->last_name }}</td>
+                                                        <td>{{ $ta->email }}</td>
+                                                        <td>{{ $ta->teachingAssistant->contracted_hours }}</td>
+                                                        <td>
+                                                            @foreach($ta->teachingAssistant->areasOfKnowledge as $area)
+                                                                <ul>{{ $area->name }}</ul>
+                                                            @endforeach
+                                                        </td>
+                                                        <td>
+                                                            <form id="manual-assign-form-{{ $booking->id }}" action="{{ route('admin.manually_assign_ta') }}" method="POST" style="display: inline;">
+                                                                @csrf
+                                                                <input type="hidden" name="ta_id" value="{{ $ta->teachingAssistant->id }}">
+                                                                <input type="hidden" name="booking_id" value="{{ $booking->id }}">
+                                                                <button type="submit" class="btn btn-success btn-sm">Assign</button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             @else
-                                            <tr>
-                                                <td colspan="6" class="text-center">No suggested TA available for manual assignment.</td>
-                                            </tr>
+                                                <tr>
+                                                    <td colspan="6" class="text-center">No suggested TA available for manual assignment.</td>
+                                                </tr>
                                             @endif
                                         </tbody>
                                     </table>
