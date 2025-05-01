@@ -17,7 +17,7 @@
 
                     <p>Welcome to your {{ $user->role }} dashboard, {{ $user->first_name }}</p>
 
-                    <div class="ta-confirmed-bookings-table">
+                    <div class="ta-confirmed-bookings-table mb-5">
                         <h3>Confirmed Bookings ({{ $ta_confirmed_bookings_count }})</h3>
                         <table class="table table-striped table-bordered">
                             <thead>
@@ -45,15 +45,16 @@
                                     <td>{{ $booking->booking->module->moduleLeader->first_name }} {{ $booking->booking->module->moduleLeader->last_name }} </td>
                                     <td>{{ \Carbon\Carbon::parse($booking->date)->format('d/m/Y')}}</td>
                                     <td>{{ \Carbon\Carbon::parse($booking->time)->format('H:i')}}</td>
-                                    <td>{{ $booking->status }}</td>
+                                    <td>{{ $booking->booking->site }}</td>
                                 </tr>
                                 @endforeach
                                 @endif
                             </tbody>
                         </table>
                     </div>
-                    
-                    
+
+                    <hr class="my-4">
+
                     <div class="edit-account-details-table">
                         <h3>{{$user->first_name}}'s Requests ({{ $ta_count }}) </h3>
                         <table class="table table-striped table-bordered">
