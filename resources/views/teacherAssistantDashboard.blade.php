@@ -34,7 +34,7 @@
                             <tbody>
                                 @if($ta_confirmed_bookings->isEmpty())
                                 <tr>
-                                    <td class="text-center" colspan="5">No bookings to display at this time.</td>
+                                    <td class="text-center" colspan="7">No bookings to display at this time.</td>
                                 </tr>
                                 @else
                                 @foreach($ta_confirmed_bookings as $booking)
