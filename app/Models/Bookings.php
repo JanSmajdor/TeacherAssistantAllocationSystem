@@ -35,9 +35,9 @@ class Bookings extends Model
         return $this->belongsTo(User::class, 'module_leader_id');
     }
 
-    public function tas()
+    public function taBookings()
     {
-        return $this->belongsToMany(User::class, 'booking_request_user', 'booking_request_id', 'user_id');
+        return $this->hasMany(TABookings::class, 'booking_id');
     }
 
     public function suggestedTa()

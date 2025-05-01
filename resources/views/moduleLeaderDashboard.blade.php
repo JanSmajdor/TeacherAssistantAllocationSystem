@@ -17,8 +17,54 @@
 
                     <p>Welcome to your {{ $user->role }} dashboard, {{ $user->first_name }}</p>
 
+                    <div class="module-leader-confirmed-bookings mb-5">
+                        <h3>Confirmed Bookings ({{ $moduleLeaderConfirmedBookingsCount }})</h3>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Module ID</th>
+                                    <th>Module Name</th>
+                                    <th>Module Leader Name</th>
+                                    <th>Booking Date</th>
+                                    <th>Booking Time</th>
+                                    <th>Site</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($moduleLeaderConfirmedBookings->isEmpty())
+                                <tr>
+                                    <td class="text-center" colspan="7">No bookings to display at this time.</td>
+                                </tr>
+                                @else
+                                @foreach($moduleLeaderConfirmedBookings as $booking)
+                                <tr>
+                                    <td>{{ $booking->id }}</td>
+                                    <td>{{ $booking->module->module_code }}</td>
+                                    <td>{{ $booking->module->module_name }}</td>
+                                    <td>
+                                        @if($booking->taBookings->isNotEmpty())
+                                            @foreach($booking->taBookings as $taBooking)
+                                                {{ $taBooking->ta->user->first_name }} {{ $taBooking->ta->user->last_name }}<br>
+                                            @endforeach
+                                        @else
+                                            No TA assigned
+                                        @endif
+                                    </td>
+                                    <td>{{ \Carbon\Carbon::parse($booking->date_from)->format('d/m/Y') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($booking->date_from)->format('H:i') }}</td>
+                                    <td>{{ $booking->site }}</td>
+                                </tr>
+                                @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <hr class="my-4">
+
                     <div class="edit-account-details-table">
-                        <h3>{{ $user->first_name }}'s Requests</h3>
+                        <h3>{{ $user->first_name }}'s Requests ({{ $bookingRequestsCount }})</h3>
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>

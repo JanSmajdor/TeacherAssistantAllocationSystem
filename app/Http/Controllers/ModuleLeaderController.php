@@ -26,7 +26,18 @@ class ModuleLeaderController extends Controller
             ->get()
             ->groupBy('request_batch_id');
 
-        return view('moduleLeaderDashboard', compact('user', 'bookingRequests'));
+        $bookingRequestsCount = $bookingRequests->count();
+
+        // Fetch confirmed bookings for the module leader
+        $moduleLeaderConfirmedBookings = Bookings::where('module_leader_id', $user->id)
+            ->where('status', 'Approved')
+            ->with(['module', 'taBookings.ta.user'])
+            ->orderBy('date_from', 'asc')
+            ->get();
+        
+        $moduleLeaderConfirmedBookingsCount = $moduleLeaderConfirmedBookings->count();
+
+        return view('moduleLeaderDashboard', compact('user', 'moduleLeaderConfirmedBookings', 'bookingRequests', 'bookingRequestsCount', 'moduleLeaderConfirmedBookingsCount'));
     }
 
     public function show()

@@ -20,5 +20,9 @@ class TABookings extends Model
         return $this->belongsTo(Bookings::class, 'booking_id');
     }
 
+    public function ta()
+    {
+        return $this->belongsTo(TeachingAssistant::class, 'ta_id');
+    }
 
 }
