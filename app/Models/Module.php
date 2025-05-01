@@ -32,4 +32,9 @@ class Module extends Model
     {
         return $this->belongsToMany(AreaOfKnowledge::class, 'module_areas_of_knowledge', 'module_id', 'area_id');
     }
+
+    public function moduleLeader()
+    {
+        return $this->belongsTo(User::class, 'module_leader_id');
+    }
 }

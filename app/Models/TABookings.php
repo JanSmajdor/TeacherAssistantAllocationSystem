@@ -14,4 +14,11 @@ class TABookings extends Model
     ];
 
     public $timestamps = true;
+
+    public function booking()
+    {
+        return $this->belongsTo(Bookings::class, 'booking_id');
+    }
+
+
 }

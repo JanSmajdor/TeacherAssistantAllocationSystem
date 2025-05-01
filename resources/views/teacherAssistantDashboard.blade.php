@@ -17,6 +17,43 @@
 
                     <p>Welcome to your {{ $user->role }} dashboard, {{ $user->first_name }}</p>
 
+                    <div class="ta-confirmed-bookings-table">
+                        <h3>Confirmed Bookings ({{ $ta_confirmed_bookings_count }})</h3>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Booking ID</th>
+                                    <th>Module ID</th>
+                                    <th>Module Name</th>
+                                    <th>Module Leader Name</th>
+                                    <th>Booking Date</th>
+                                    <th>Booking Time</th>
+                                    <th>Site</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if($ta_confirmed_bookings->isEmpty())
+                                <tr>
+                                    <td class="text-center" colspan="5">No bookings to display at this time.</td>
+                                </tr>
+                                @else
+                                @foreach($ta_confirmed_bookings as $booking)
+                                <tr>
+                                    <td>{{ $booking->id }}</td>
+                                    <td>{{ $booking->booking->module->module_code }}</td>
+                                    <td>{{ $booking->booking->module->module_name }}</td>
+                                    <td>{{ $booking->booking->module->moduleLeader->first_name }} {{ $booking->booking->module->moduleLeader->last_name }} </td>
+                                    <td>{{ \Carbon\Carbon::parse($booking->date)->format('d/m/Y')}}</td>
+                                    <td>{{ \Carbon\Carbon::parse($booking->time)->format('H:i')}}</td>
+                                    <td>{{ $booking->status }}</td>
+                                </tr>
+                                @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    
                     <div class="edit-account-details-table">
                         <h3>{{$user->first_name}}'s Requests ({{ $ta_count }}) </h3>
                         <table class="table table-striped table-bordered">

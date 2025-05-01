@@ -10,6 +10,8 @@ use App\Models\Availability;
 use App\Models\TAAreaOfKnowledge;
 use App\Models\TAEditAreasOfKnowledgeRequest;
 use App\Models\TeachingAssistant;
+use App\Models\TABookings;
+use App\Models\Booking;
 
 class TeacherAssistantController extends Controller
 {
@@ -29,20 +31,29 @@ class TeacherAssistantController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-     public function index()
-     {
+    public function index()
+    {
         $user = Auth::user();
         $ta_details = TeachingAssistant::where('user_id', $user->id)->first();
 
         $ta_edit_account_requests = TAEditAreasOfKnowledgeRequest::where('ta_id', $ta_details->id)
-        ->where('hidden', '0')
-        ->with('teaching_assistant.user')
-        ->get();
+            ->where('hidden', '0')
+            ->with('teaching_assistant.user')
+            ->get();
 
         $ta_count = $ta_edit_account_requests->count();
 
-        return view('teacherAssistantDashboard', compact('user', 'ta_edit_account_requests', 'ta_count'));
-     }
+        $ta_confirmed_bookings = TABookings::where('ta_id', $ta_details->id)
+            ->whereHas('booking', function ($query) {
+                $query->where('status', 'Approved');
+            })
+            ->with('booking.module.moduleLeader')
+            ->get();
+
+        $ta_confirmed_bookings_count = $ta_confirmed_bookings->count();
+
+        return view('teacherAssistantDashboard', compact('user', 'ta_edit_account_requests', 'ta_count', 'ta_confirmed_bookings', 'ta_confirmed_bookings_count'));
+    }
 
     public function show()
     {
